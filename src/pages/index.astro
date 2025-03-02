@@ -1,0 +1,24 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>🧑‍🚀 Hello, Everyone!</h1>
+      <p>
+        I'm Dmitriy, a software engineer with a passion for building products
+        that help people live better lives.
+      </p>
+    </main>
+    <Footer />
+  </body>
+</html>
