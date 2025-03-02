@@ -7,4 +7,7 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://dmmishchenko.github.io",
   integrations: [mdx(), sitemap()],
+  server: {
+    host: "0.0.0.0"
+  }
 });
