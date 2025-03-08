@@ -138,9 +138,12 @@ import { SITE_TITLE } from "../consts";
 </style>
 
 <script>
-  // Check if the browser supports color-scheme
+  // Get initial theme from localStorage or system preference
+  const storedTheme = localStorage.getItem('theme');
   const prefersColorScheme = window.matchMedia("(prefers-color-scheme: dark)");
-  let isDarkMode = prefersColorScheme.matches;
+  let isDarkMode = storedTheme 
+    ? storedTheme === 'dark'
+    : prefersColorScheme.matches;
 
   // Function to toggle icons based on color scheme
   const toggleIcons = (isDark: boolean) => {
@@ -152,19 +155,26 @@ import { SITE_TITLE } from "../consts";
     }
   };
 
-  // Listen for system color scheme changes
+  // Function to update theme
+  const updateTheme = (isDark: boolean) => {
+    isDarkMode = isDark;
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    toggleIcons(isDark);
+  };
+
+  // Listen for system color scheme changes (only if no stored preference)
   prefersColorScheme.addEventListener("change", (e) => {
-    isDarkMode = e.matches;
-    toggleIcons(isDarkMode);
+    if (!localStorage.getItem('theme')) {
+      updateTheme(e.matches);
+    }
   });
 
   // Handle manual theme toggle
   document.getElementById("theme-toggle")?.addEventListener("click", () => {
-    isDarkMode = !isDarkMode;
-    document.documentElement.style.colorScheme = isDarkMode ? "dark" : "light";
-    toggleIcons(isDarkMode);
+    updateTheme(!isDarkMode);
   });
 
-  // Initial state
+  // Only update icons on load since theme is already set
   toggleIcons(isDarkMode);
 </script>
