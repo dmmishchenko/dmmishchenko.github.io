@@ -12,7 +12,13 @@ import { SITE_TITLE } from "../consts";
       <HeaderLink href="/about">About</HeaderLink>
     </div>
     <div class="theme-controls">
-      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+      <button
+        id="theme-toggle"
+        class="theme-toggle"
+        aria-label="Toggle theme"
+        popovertarget="theme-popover"
+        popovertargetaction="toggle"
+      >
         <svg
           class="sun-icon"
           xmlns="http://www.w3.org/2000/svg"
@@ -50,6 +56,70 @@ import { SITE_TITLE } from "../consts";
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
+      <div id="theme-popover" popover>
+        <div class="theme-options">
+          <button class="theme-option" data-theme="light">
+            <svg
+              class="sun-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            Light
+          </button>
+          <button class="theme-option" data-theme="dark">
+            <svg
+              class="moon-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            Dark
+          </button>
+          <button class="theme-option" data-theme="system">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            System
+          </button>
+        </div>
+      </div>
     </div>
   </nav>
 </header>
@@ -118,63 +188,172 @@ import { SITE_TITLE } from "../consts";
     height: 24px;
   }
 
+  #theme-popover {
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    inset: unset;
+    right: 8px;
+    top: 60px;
+  }
+
+  .theme-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 150px;
+  }
+
+  .theme-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: none;
+    background: none;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .theme-option svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
   @media (prefers-color-scheme: dark) {
-    .sun-icon {
-      display: block;
+    #theme-popover {
+      background-color: #1a1b26;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .moon-icon {
+
+    .theme-option {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .theme-option:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .theme-option[data-selected="true"] {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--accent);
+    }
+
+    .theme-toggle .sun-icon {
       display: none;
+    }
+    .theme-toggle .moon-icon {
+      display: block;
     }
   }
 
   @media (prefers-color-scheme: light) {
-    .sun-icon {
-      display: none;
+    #theme-popover {
+      background-color: white;
+      border: 1px solid rgba(0, 0, 0, 0.1);
     }
-    .moon-icon {
+
+    .theme-option {
+      color: rgba(0, 0, 0, 0.9);
+    }
+
+    .theme-option:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .theme-option[data-selected="true"] {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--accent);
+    }
+
+    .theme-toggle .sun-icon {
       display: block;
+    }
+    .theme-toggle .moon-icon {
+      display: none;
     }
   }
 </style>
 
 <script>
-  // Get initial theme from localStorage or system preference
+  // Get initial theme from localStorage or default to system
   const storedTheme = localStorage.getItem('theme');
   const prefersColorScheme = window.matchMedia("(prefers-color-scheme: dark)");
-  let isDarkMode = storedTheme 
-    ? storedTheme === 'dark'
-    : prefersColorScheme.matches;
+  let currentTheme = storedTheme || 'system';
+  
+  // Function to update theme option buttons
+  const updateThemeButtons = () => {
+    document.querySelectorAll('.theme-option').forEach(button => {
+      const isSelected = button.getAttribute('data-theme') === currentTheme;
+      button.setAttribute('data-selected', isSelected.toString());
+    });
+  };
+
+  // Function to get effective theme (resolving 'system' to actual theme)
+  const getEffectiveTheme = () => {
+    if (currentTheme === 'system') {
+      return prefersColorScheme.matches ? 'dark' : 'light';
+    }
+    return currentTheme;
+  };
 
   // Function to toggle icons based on color scheme
   const toggleIcons = (isDark: boolean) => {
-    const sunIcon = document.querySelector(".sun-icon") as HTMLElement;
-    const moonIcon = document.querySelector(".moon-icon") as HTMLElement;
+    const sunIcon = document.querySelector(".theme-toggle .sun-icon") as HTMLElement;
+    const moonIcon = document.querySelector(".theme-toggle .moon-icon") as HTMLElement;
     if (sunIcon && moonIcon) {
-      sunIcon.style.display = isDark ? "block" : "none";
-      moonIcon.style.display = isDark ? "none" : "block";
+      sunIcon.style.display = isDark ? "none" : "block";
+      moonIcon.style.display = isDark ? "block" : "none";
     }
   };
 
   // Function to update theme
-  const updateTheme = (isDark: boolean) => {
-    isDarkMode = isDark;
-    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    toggleIcons(isDark);
+  const updateTheme = (theme: string) => {
+    currentTheme = theme;
+    const effectiveTheme = getEffectiveTheme();
+    document.documentElement.style.colorScheme = effectiveTheme;
+    
+    // Only store in localStorage if it's not system theme
+    if (theme === 'system') {
+      localStorage.removeItem('theme');
+    } else {
+      localStorage.setItem('theme', theme);
+    }
+    
+    toggleIcons(effectiveTheme === 'dark');
+    updateThemeButtons();
+
+    // Hide popover after selection
+    const popover = document.getElementById('theme-popover');
+    if (popover && popover.matches(':popover-open')) {
+      popover.hidePopover();
+    }
   };
 
-  // Listen for system color scheme changes (only if no stored preference)
+  // Handle theme option clicks
+  document.querySelectorAll('.theme-option').forEach(button => {
+    button.addEventListener('click', () => {
+      const theme = button.getAttribute('data-theme') || 'system';
+      updateTheme(theme);
+    });
+  });
+
+  // Listen for system color scheme changes
   prefersColorScheme.addEventListener("change", (e) => {
-    if (!localStorage.getItem('theme')) {
-      updateTheme(e.matches);
+    if (currentTheme === 'system') {
+      const effectiveTheme = getEffectiveTheme();
+      document.documentElement.style.colorScheme = effectiveTheme;
+      toggleIcons(effectiveTheme === 'dark');
     }
   });
 
-  // Handle manual theme toggle
-  document.getElementById("theme-toggle")?.addEventListener("click", () => {
-    updateTheme(!isDarkMode);
-  });
-
-  // Only update icons on load since theme is already set
-  toggleIcons(isDarkMode);
+  // Only update buttons and icons to match current state
+  const effectiveTheme = getEffectiveTheme();
+  toggleIcons(effectiveTheme === 'dark');
+  updateThemeButtons();
 </script>
