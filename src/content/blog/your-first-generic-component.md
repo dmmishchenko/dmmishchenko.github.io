@@ -10,6 +10,7 @@ heroImage: "/blog-placeholder-3.jpg"
 ## Prerequisites
 
 To get the most out of this article, you should have:
+
 - Basic understanding of Angular components and services
 - Familiarity with TypeScript generics
 - Experience building simple Angular applications
@@ -53,8 +54,8 @@ If you decide to proceed with building a generic component, consider these organ
 
 ```typescript
 // First, define our interfaces
-export interface TableColumn<T> {
-  key: keyof T | string;
+export interface TableColumn<T = any> {
+  key: keyof T;
   header: string;
   cellTemplate?: TemplateRef<unknown>;
   sortable?: boolean;
@@ -70,18 +71,22 @@ import {
   output,
   model,
   computed,
-  signal,
   contentChild,
   TemplateRef,
   ChangeDetectionStrategy,
 } from "@angular/core";
+import { NgTemplateOutlet } from "@angular/common";
+import { GetCellValuePipe } from "./get-cell-value.pipe";
+import { GetSortIconPipe } from "./get-sort-icon.pipe";
 
 @Component({
   selector: "app-data-table",
   templateUrl: "./data-table.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [NgTemplateOutlet, GetCellValuePipe, GetSortIconPipe],
 })
-export class DataTableComponent<T> {
+export class DataTableComponent<T = any> {
   // Events
   readonly rowClick = output<T>();
 
@@ -114,9 +119,9 @@ export class DataTableComponent<T> {
   });
 
   // Content projection for custom templates
-  private readonly headerTemplate =
+  protected readonly headerTemplate =
     contentChild<TemplateRef<unknown>>("headerTemplate");
-  private readonly footerTemplate =
+  protected readonly footerTemplate =
     contentChild<TemplateRef<unknown>>("footerTemplate");
 
   // Public methods
@@ -138,15 +143,6 @@ export class DataTableComponent<T> {
   protected onRowClick(item: T): void {
     this.rowClick.emit(item);
   }
-
-  protected getSortIcon(column: TableColumn<T>): string {
-    if (!column.sortable) return "";
-
-    const key = column.key as string;
-    if (this.sortColumn() !== key) return "sort";
-
-    return this.sortDirection() === "asc" ? "arrow_upward" : "arrow_downward";
-  }
 }
 ```
 
@@ -154,7 +150,7 @@ export class DataTableComponent<T> {
 <!-- data-table.component.html -->
 <div class="table-container">
   <!-- Custom header template or default header -->
-  @if (headerTemplate) {
+  @if (headerTemplate(); as headerTemplate) {
   <ng-container [ngTemplateOutlet]="headerTemplate"></ng-container>
   } @else {
   <div class="table-header">
@@ -173,7 +169,9 @@ export class DataTableComponent<T> {
           (click)="sort(column)"
         >
           {{ column.header }} @if (column.sortable) {
-          <span class="sort-icon">{{ getSortIcon(column) }}</span>
+          <span class="sort-icon"
+            >{{ column | getSortIcon : sortColumn() : sortDirection() }}</span
+          >
           }
         </th>
         }
@@ -191,7 +189,7 @@ export class DataTableComponent<T> {
             [ngTemplateOutletContext]="{ $implicit: item, column: column }"
           >
           </ng-container>
-          } @else { {{ item[column.key] }} }
+          } @else { {{ item | getCellValue : column.key }} }
         </td>
         }
       </tr>
@@ -200,7 +198,7 @@ export class DataTableComponent<T> {
   </table>
 
   <!-- Custom footer template -->
-  @if (footerTemplate) {
+  @if (footerTemplate(); as footerTemplate) {
   <ng-container [ngTemplateOutlet]="footerTemplate"></ng-container>
   }
 </div>
@@ -209,8 +207,19 @@ export class DataTableComponent<T> {
 ### Usage Example
 
 ```typescript
-// Usage example in a parent component
-import { Component, inject, ViewChild, TemplateRef } from "@angular/core";
+// users-page.component.ts
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  Signal,
+  TemplateRef,
+  viewChild,
+} from "@angular/core";
+import {
+  DataTableComponent,
+  TableColumn,
+} from "../data-table/data-table.component";
 
 interface User {
   id: number;
@@ -222,25 +231,11 @@ interface User {
 
 @Component({
   selector: "app-users-page",
-  template: `
-    <app-data-table
-      [data]="users"
-      [columns]="columns"
-      (rowClick)="onUserClick($event)"
-    >
-      <ng-template #headerTemplate>
-        <div class="custom-header">
-          <h2>User Management</h2>
-          <button (click)="addUser()">Add User</button>
-        </div>
-      </ng-template>
-    </app-data-table>
-    <ng-template #activeTemplate let-user>
-      <span class="status-indicator" [class.active]="user.active">
-        {{ user.active ? "Active" : "Inactive" }}
-      </span>
-    </ng-template>
-  `,
+  templateUrl: "./users-page.component.html",
+  styleUrl: "./users-page.component.css",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [DataTableComponent],
 })
 export class UsersPageComponent {
   protected readonly activeTemplate =
@@ -264,17 +259,20 @@ export class UsersPageComponent {
     // More users...
   ];
 
-  columns: TableColumn<User>[] = [
-    { key: "name", header: "Name", sortable: true },
-    { key: "email", header: "Email", sortable: true },
-    { key: "role", header: "Role", sortable: true },
-    {
-      key: "active",
-      header: "Status",
-      sortable: true,
-      cellTemplate: this.activeTemplate(),
-    },
-  ];
+  columns: Signal<TableColumn<User>[]> = computed(() => {
+    const activeTemplate = this.activeTemplate();
+    return [
+      { key: "name", header: "Name", sortable: true },
+      { key: "email", header: "Email", sortable: true },
+      { key: "role", header: "Role", sortable: true },
+      {
+        key: "active",
+        header: "Status",
+        sortable: true,
+        cellTemplate: activeTemplate,
+      },
+    ];
+  });
 
   onUserClick(user: User): void {
     console.log("User clicked:", user);
@@ -287,6 +285,27 @@ export class UsersPageComponent {
 }
 ```
 
+```html
+<!-- users-page.component.html -->
+<app-data-table
+  [data]="users"
+  [columns]="columns()"
+  (rowClick)="onUserClick($event)"
+>
+  <ng-template #headerTemplate>
+    <div class="custom-header">
+      <h2>User Management</h2>
+      <button (click)="addUser()">Add User</button>
+    </div>
+  </ng-template>
+</app-data-table>
+<ng-template #activeTemplate let-user>
+  <span class="status-indicator" [class.active]="user.active">
+    {{ user.active ? 'Active' : 'Inactive' }}
+  </span>
+</ng-template>
+```
+
 This example demonstrates several modern Angular features:
 
 1. **Input/Output Signals**: Using `input()` and `output()` functions instead of decorators for reactive inputs and outputs
@@ -297,6 +316,7 @@ This example demonstrates several modern Angular features:
 6. **Computed Signals**: For derived state like sorted data
 
 These features make the component more reactive, type-safe, and maintainable while improving performance.
+
 </details>
 
 ### Performance and Optimization
