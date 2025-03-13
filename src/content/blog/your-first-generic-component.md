@@ -336,6 +336,11 @@ These features make the component more reactive, type-safe, and maintainable whi
 
 </details>
 
+<details>
+<summary>Same example on the Stackblitz</summary>
+<iframe src="https://stackblitz.com/edit/stackblitz-starters-2bxx3a8y?ctl=1&embed=1&file=src%2Fdata-table%2Fdata-table.component.ts" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" title="Angular Generic Data Table Example"></iframe>
+</details>
+
 ### Performance and Optimization
 
 > ⚠️ **Important:** Change detection strategy should be OnPush for all generic components. This is non-negotiable for performance reasons.
@@ -401,4 +406,4 @@ Building a generic component requires careful planning, solid technical implemen
 
 ---
 
-*This article was last updated on March 13, 2025. The code examples use Angular 19.*
+_This article was last updated on March 13, 2025. The code examples use Angular 19._
