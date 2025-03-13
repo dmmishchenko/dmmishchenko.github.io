@@ -338,12 +338,11 @@ These features make the component more reactive, type-safe, and maintainable whi
 
 ### Performance and Optimization
 
-- **Change detection**: Change detection strategy should be OnPush. This is non-negotiable for reusable components.
+> ⚠️ **Important:** Change detection strategy should be OnPush for all generic components. This is non-negotiable for performance reasons.
+
 - **Large datasets**: Consider optimizations if your component will be used with large data sets. For tables, implement virtual scrolling (can be configurable via input).
 - **Memoization**: Use memoization techniques for expensive operations. For simpler cases, computed signals can handle this for you.
 - **State management**: Don't abuse state as it will create difficulties in controlling your component. If you need state providers, separate them from other parts of your app. The same applies to localStorage or other storage - use separate keys to avoid conflicts.
-
-> ⚠️ **Important:** Change detection strategy should be OnPush for all generic components. This is non-negotiable for performance reasons.
 
 ### Testing and Quality Assurance
 
