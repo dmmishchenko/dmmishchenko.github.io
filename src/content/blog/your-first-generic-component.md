@@ -1,7 +1,7 @@
 ---
 title: "Building your first generic Angular component"
 description: "This article helps you to understand how to build your generic components on Angular"
-pubDate: "Mar 01 2025"
+pubDate: "Mar 13 2025"
 heroImage: "/blog-placeholder-3.jpg"
 ---
 
@@ -15,11 +15,22 @@ To get the most out of this article, you should have:
 - Familiarity with TypeScript generics
 - Experience building simple Angular applications
 
-## Introduction
+---
+
+## 1. Introduction
 
 Building generic, reusable components in Angular can be both rewarding and challenging. While they promise to reduce duplication and standardize interfaces across your application, they also come with significant complexity and maintenance considerations. This guide will help you decide whether creating a generic component is right for your situation, and if so, how to approach it effectively. We'll explore best practices, common pitfalls, and technical considerations to ensure your component serves its users well.
 
-## Should You Build a Generic Component?
+### Who this article is for
+
+- Angular developers looking to build reusable component libraries
+- Team leads considering standardizing UI components across projects
+- Developers who find themselves duplicating similar components across an application
+- Anyone interested in modern Angular component architecture
+
+---
+
+## 2. Should You Build a Generic Component?
 
 Before diving into implementation, consider these reasons why you might want to reconsider:
 
@@ -27,7 +38,11 @@ Before diving into implementation, consider these reasons why you might want to 
 - **Existing solutions**: There are a lot of open source analogues that can be used; don't need to reinvent the wheel again. I suggest you make a proper research. It could save you a lot of effort.
 - **Responsibility creep**: Generic components often try to cover too many responsibilities at once. This happens when people blindly follow the DRY rule. It's better to split functionality into separate specific components. It's okay to repeat some code.
 
-## Planning and Management Considerations
+> 💡 **Tip:** Before starting, search for existing solutions on npm, GitHub, or popular UI libraries. You might find something that meets 80% of your needs with much less effort.
+
+---
+
+## 3. Planning and Management Considerations
 
 If you decide to proceed with building a generic component, consider these organizational aspects:
 
@@ -36,7 +51,9 @@ If you decide to proceed with building a generic component, consider these organ
 - **Feedback strategy**: Try not to involve too many people in discussions at the beginning, as it will slow you down. Instead, gather feedback after release from your users (other developers).
 - **Documentation and training**: Be ready for repetitive questions from other developers. Plan for small training sessions - concepts that are obvious to you may not be to others who haven't worked extensively with the component.
 
-## Technical Implementation
+---
+
+## 4. Technical Implementation
 
 ### API Design and Type Safety
 
@@ -326,6 +343,8 @@ These features make the component more reactive, type-safe, and maintainable whi
 - **Memoization**: Use memoization techniques for expensive operations. For simpler cases, computed signals can handle this for you.
 - **State management**: Don't abuse state as it will create difficulties in controlling your component. If you need state providers, separate them from other parts of your app. The same applies to localStorage or other storage - use separate keys to avoid conflicts.
 
+> ⚠️ **Important:** Change detection strategy should be OnPush for all generic components. This is non-negotiable for performance reasons.
+
 ### Testing and Quality Assurance
 
 - **Unit tests**: Cover your code with tests - at minimum, unit tests should verify how your component reacts to all inputs and confirm it emits all expected events/outputs.
@@ -333,18 +352,38 @@ These features make the component more reactive, type-safe, and maintainable whi
 - **Cross-browser compatibility**: Try to cover all main browsers and devices if you have capacity. The "we only use Chrome" approach rarely lasts long.
 - **Fallbacks**: If you have browser/device support limitations, discuss this with management. Either mark certain devices/browsers as not well supported, or disable component usage in those environments (though this is not ideal).
 
+> 🧪 **Testing tip:** Create a comprehensive test suite early. It will save you time when refactoring and give you confidence when making changes.
+
 ### User Experience Considerations
 
 - **Internationalization (i18n)**: Consider what types of users will interact with your component. Plan for date/number formatting, RTL support, and text translation.
 - **Styling and theming**: Make styling configurable. CSS custom properties are one of the best solutions to let developers change appearance aspects.
 - **Accessibility**: Accessibility should never be an afterthought. Ensure your component follows WCAG guidelines by implementing proper keyboard navigation (tab order, focus management), adding appropriate ARIA attributes (roles, labels, descriptions), and maintaining sufficient color contrast. Test with screen readers like NVDA or VoiceOver. Remember that accessibility benefits all users, not just those with disabilities. For interactive components like tables, dropdowns, or modals, implement proper keyboard controls (arrow keys, Escape key) and ensure focus trapping when necessary. Document accessibility features so developers using your component understand how to maintain them.
 
-## Documentation and Sharing
+---
+
+## 5. Documentation and Sharing
 
 - **Demo page**: Create a demo page with configurable options, or a playground page hidden behind a dev flag that you can share with other developers.
 - **Change communication**: Learn how to publish changes clearly so users are informed. Write changelogs, update your demo page/playground, and provide code examples.
 
-## Conclusion
+> 📝 **Documentation tip:** Include both API documentation and usage examples. Show common patterns and edge cases to help developers understand how to use your component effectively.
+
+---
+
+## 6. Common Pitfalls to Avoid
+
+- **Over-generalization**: Making components too generic often leads to complexity and maintenance issues. Focus on solving specific problems rather than creating a component that tries to do everything.
+
+- **Poor documentation**: Generic components without clear documentation become unusable. Document not just the API, but also usage patterns, edge cases, and limitations.
+
+- **Ignoring performance**: Generic components that don't consider performance can cause application-wide slowdowns. Always use OnPush change detection and consider the impact of your component on the overall application performance.
+
+- **Tight coupling**: Avoid dependencies on specific services or state management solutions. Your component should work regardless of the application architecture it's used in.
+
+---
+
+## 7. Conclusion
 
 Building a generic component requires careful planning, solid technical implementation, and ongoing maintenance. When done right, it can significantly improve development efficiency and application consistency. However, always weigh the benefits against the costs before embarking on this journey.
 
@@ -354,11 +393,13 @@ Building a generic component requires careful planning, solid technical implemen
 - Join Angular communities to share your components and get feedback
 - Consider contributing to open-source component libraries to learn from others
 
-> ⚠️ **Important:** Change detection strategy should be OnPush for all generic components. This is non-negotiable for performance reasons.
+### Further Reading
 
-## Common Pitfalls to Avoid
+- [Angular Documentation on Components](https://angular.dev/guide/components)
+- [TypeScript Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)
+- [Angular Content Projection Guide](https://angular.dev/guide/components/content-projection)
+- [Building Accessible Components](https://angular.dev/best-practices/a11y)
 
-- **Over-generalization**: Making components too generic often leads to complexity and maintenance issues
-- **Poor documentation**: Generic components without clear documentation become unusable
-- **Ignoring performance**: Generic components that don't consider performance can cause application-wide slowdowns
-- **Tight coupling**: Avoid dependencies on specific services or state management solutions
+---
+
+*This article was last updated on March 13, 2025. The code examples use Angular 19.*
