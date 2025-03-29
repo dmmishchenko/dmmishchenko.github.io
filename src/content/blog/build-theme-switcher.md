@@ -7,7 +7,6 @@ heroImage: "/theme-switcher.jpeg"
 
 > **TL;DR:** This guide shows how to build a modern theme switcher in Angular using Signals, CSS variables, and the new `light-dark()` function. We'll cover implementation details, best practices, and how to make it easily adoptable across your application.
 
-# Building a Modern Theme Switcher in Angular
 
 In this guide, we'll explore how to implement a robust theme switching system in Angular that supports light, dark, and system themes. We'll cover the implementation details, best practices, and how to make it easily adoptable across your entire application.
 
