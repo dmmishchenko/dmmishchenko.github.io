@@ -385,19 +385,37 @@ To ensure your theme switcher works correctly across different scenarios:
 
 The `light-dark()` function is a modern CSS feature with the following browser support:
 
-- Chrome: 119+
-- Firefox: 121+
-- Safari: 17.2+
-- Edge: 119+
+- Chrome: 123+
+- Firefox: 120+
+- Safari: 17.5+
+- Edge: 123+
 
-For older browsers, consider providing a fallback:
+> ⚠️ **Note:** The `light-dark()` function is a relatively new feature. For older browsers, consider providing a fallback:
 
 ```css
 :root {
   /* Fallback for older browsers */
   --accent: #2337ff;
-
+  
   /* Modern browsers */
+  @supports (color: light-dark(#000, #fff)) {
+    --accent: light-dark(#2337ff, #7c89ff);
+  }
+}
+```
+
+For broader browser support, you can also use the `prefers-color-scheme` media query as a fallback:
+
+```css
+:root {
+  /* Fallback using prefers-color-scheme */
+  --accent: #2337ff;
+  
+  @media (prefers-color-scheme: dark) {
+    --accent: #7c89ff;
+  }
+  
+  /* Modern browsers with light-dark() */
   @supports (color: light-dark(#000, #fff)) {
     --accent: light-dark(#2337ff, #7c89ff);
   }
