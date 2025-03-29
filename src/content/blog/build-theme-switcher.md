@@ -122,12 +122,18 @@ Key features:
 - Computes effective theme based on system preference
 - Clean-up with OnDestroy
 
-<details>
-<summary> 🎮 Try it out on Stackblitz</summary>
+<details id="stackblitz-details">
+<summary>🎮 Try it out on Stackblitz</summary>
 <div class="stackblitz-container">
   <iframe src="https://stackblitz.com/edit/github-cjbtqt8u?ctl=1&embed=1&file=src%2Fapp%2Ftheme-switcher%2Ftheme-switcher.component.ts" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" title="Theme Switcher Example"></iframe>
 </div>
 </details>
+
+<script>
+  // Simple A/B testing - randomly set initial state
+  const details = document.getElementById('stackblitz-details');
+  details.open = Math.random() > 0.5; // 50% chance of being open
+</script>
 
 ---
 
